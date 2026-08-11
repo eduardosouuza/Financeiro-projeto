@@ -2,7 +2,7 @@ import { AuthProvider, useAuth } from '@/contexts/AuthContext';
 import { ThemeProvider } from '@/contexts/ThemeContext';
 import { CoupleProvider } from '@/contexts/CoupleContext';
 import { RouterProvider, useRouter } from '@/contexts/RouterContext';
-import { useSeedData } from '@/hooks/useSeedData';
+
 import { AuthScreen } from '@/components/auth/AuthScreen';
 import { AppLayout } from '@/components/layout/AppLayout';
 import { FullPageLoading } from '@/components/ui/Loading';
@@ -46,7 +46,6 @@ function RouteRenderer() {
 
 function AppContent() {
   const { session, loading } = useAuth();
-  useSeedData();
 
   if (loading) return <FullPageLoading />;
   if (!session) return <AuthScreen />;

@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { Plus, Pencil, Trash2, CreditCard, Layers } from 'lucide-react';
+import { Plus, Pencil, Trash2, CreditCard, Layers, Settings } from 'lucide-react';
 import { useFinanceData } from '@/hooks/useFinanceData';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/lib/supabase';
@@ -100,12 +100,42 @@ export function CardsPage() {
             onClose={() => setSelectedCard(null)}
             title={selectedCardData?.name ?? 'Cartão'}
             size="lg"
-            footer={<><Button variant="secondary" onClick={() => setSelectedCard(null)}>Fechar</Button><Button onClick={() => navigate('installments')}><Layers size={16} /> Ver parcelas</Button></>}
+            footer={
+              <>
+                <Button variant="secondary" onClick={() => setSelectedCard(null)}>Fechar</Button>
+                <Button
+                  variant="danger"
+                  onClick={() => {
+                    setConfirmDelete(selectedCardData);
+                    setSelectedCard(null);
+                  }}
+                >
+                  <Trash2 size={16} /> Excluir
+                </Button>
+                <Button onClick={() => navigate('installments')}><Layers size={16} /> Ver parcelas</Button>
+              </>
+            }
           >
             {selectedCardData && (
               <div className="space-y-4">
                 <div className="rounded-2xl p-4 text-white sm:p-5" style={{ backgroundColor: selectedCardData.color }}>
-                  <div className="flex justify-between"><span className="truncate text-sm opacity-80">{selectedCardData.bank}</span><CreditCard size={24} className="shrink-0" /></div>
+                  <div className="flex justify-between">
+                    <span className="truncate text-sm opacity-80">{selectedCardData.bank}</span>
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => {
+                          setEditing(selectedCardData);
+                          setModalOpen(true);
+                          setSelectedCard(null);
+                        }}
+                        className="rounded-full p-1 hover:bg-white/20 transition-colors"
+                        title="Editar cartão"
+                      >
+                        <Settings size={20} className="shrink-0" />
+                      </button>
+                      <CreditCard size={24} className="shrink-0" />
+                    </div>
+                  </div>
                   <p className="mt-4 text-base font-mono tracking-widest sm:text-lg">**** {selectedCardData.last_digits}</p>
                   <div className="mt-2 flex justify-between text-xs opacity-90">
                     <span>Fechamento: dia {selectedCardData.closing_day}</span>
@@ -136,7 +166,7 @@ export function CardsPage() {
         </>
       )}
 
-      <CardFormModal open={modalOpen} onClose={() => setModalOpen(false)} editing={editing} userId={user?.id ?? ''} onSaved={() => { setModalOpen(false); refresh(); }} />
+      <CardFormModal open={modalOpen} onClose={() => { setModalOpen(false); setEditing(null); }} editing={editing} userId={user?.id ?? ''} onSaved={() => { setModalOpen(false); setEditing(null); refresh(); }} />
 
       <Modal open={!!confirmDelete} onClose={() => setConfirmDelete(null)} title="Excluir cartão"
         footer={<><Button variant="secondary" onClick={() => setConfirmDelete(null)}>Cancelar</Button><Button variant="danger" onClick={handleDelete}>Excluir</Button></>}>
